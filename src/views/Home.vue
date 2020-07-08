@@ -1,12 +1,24 @@
 <template>
-  <div class="home"></div>
+  <div class="home">{{ testdata }}</div>
 </template>
 
 <script>
-// @ is an alias to /src
-
 export default {
   name: "Home",
-  components: {}
+  components: {},
+  data() {
+    return {
+      testdata: ""
+    };
+  },
+  methods: {
+    async fetchWeatherForecasts() {
+      const response = await this.getRequest("api/weatherforecast");
+      this.testdata = JSON.stringify(response);
+    }
+  },
+  async created() {
+    await this.fetchWeatherForecasts();
+  }
 };
 </script>
