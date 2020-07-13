@@ -63,6 +63,7 @@ module.exports = {
       }
     },
     port: 5001,
-    https: false
+    https: false,
+    lintOnSave: false
   }
 };
