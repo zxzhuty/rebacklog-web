@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <el-alert :title="testtext" type="success" :closable="false"></el-alert>
+    <a-alert :message="testtext" type="success" />
     <router-view />
   </div>
 </template>

@@ -1,9 +1,10 @@
 import Vue from "vue";
 import App from "./App.vue";
+import Antd from "ant-design-vue";
 import "./registerServiceWorker";
 import router from "./router";
+import "./theme/index.less";
 import store from "./store";
-import "./plugins/element";
 import { postRequest } from "./utils/api";
 import { postKeyValueRequest } from "./utils/api";
 import { putRequest } from "./utils/api";
@@ -17,6 +18,7 @@ Vue.prototype.deleteRequest = deleteRequest;
 Vue.prototype.getRequest = getRequest;
 
 Vue.config.productionTip = false;
+Vue.use(Antd);
 
 new Vue({
   router,
