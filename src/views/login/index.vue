@@ -2,53 +2,56 @@
   <common-layout>
     <div class="top">
       <div class="header">
-        <!-- <img alt="logo" class="logo" src="@/assets/img/logo.png" /> 预留logo-->
+        <img alt="logo" class="logo" src="@/assets/img/logo.png" />
         <span class="title">{{ systemName }}</span>
       </div>
-      <!-- <div class="desc">预留文本</div> -->
+      <div class="desc">预留文本宣传语</div>
     </div>
     <div class="login">
-      <a-form @submit="onSubmit" :autoFormCreate="form => (this.form = form)">
+      <a-form @submit="onSubmit" :form="form">
         <a-tabs
           size="large"
           :tabBarStyle="{ textAlign: 'center' }"
           style="padding: 0 2px;"
         >
           <a-tab-pane tab="账户密码登录" key="1">
-            <a-alert
-              type="error"
-              :closable="true"
-              v-show="error"
-              :message="error"
-              showIcon
-              style="margin-bottom: 24px;"
-            />
-            <a-form-item
-              fieldDecoratorId="name"
-              :fieldDecoratorOptions="{
-                rules: [
-                  { required: true, message: '请输入账户名', whitespace: true }
-                ]
-              }"
-            >
-              <a-input size="large" placeholder="admin">
+            <a-form-item>
+              <a-input
+                v-decorator="[
+                  'username',
+                  {
+                    initialValue: testuser.username,
+                    rules: [
+                      { required: true, message: 'Please input your username!' }
+                    ]
+                  }
+                ]"
+                size="large"
+                placeholder="user"
+              >
                 <a-icon slot="prefix" type="user" />
               </a-input>
             </a-form-item>
-            <a-form-item
-              fieldDecoratorId="password"
-              :fieldDecoratorOptions="{
-                rules: [
-                  { required: true, message: '请输入密码', whitespace: true }
-                ]
-              }"
-            >
-              <a-input size="large" placeholder="888888" type="password">
+            <a-form-item>
+              <a-input
+                v-decorator="[
+                  'password',
+                  {
+                    initialValue: testuser.password,
+                    rules: [
+                      { required: true, message: 'Please input your Password!' }
+                    ]
+                  }
+                ]"
+                size="large"
+                placeholder="password"
+                type="password"
+              >
                 <a-icon slot="prefix" type="lock" />
               </a-input>
             </a-form-item>
             <div>
-              <a-checkbox :checked="true">自动登录</a-checkbox>
+              <a-checkbox>自动登录</a-checkbox>
               <a style="float: right">忘记密码</a>
             </div>
             <a-form-item>
@@ -61,6 +64,13 @@
                 >登录</a-button
               >
             </a-form-item>
+            <div>
+              其他登录方式 预留
+              <a-icon class="icon" type="alipay-circle" />
+              <a-icon class="icon" type="taobao-circle" />
+              <a-icon class="icon" type="weibo-circle" />
+              <router-link style="float: right" to="/">注册账户</router-link>
+            </div>
           </a-tab-pane>
           <!-- <a-tab-pane tab="手机号登录" key="2">
             <a-form-item>
@@ -87,13 +97,6 @@
             </a-form-item>
           </a-tab-pane> -->
 
-          <!-- <div>
-          其他登录方式 预留
-          <a-icon class="icon" type="alipay-circle" />
-          <a-icon class="icon" type="taobao-circle" />
-          <a-icon class="icon" type="weibo-circle" />
-          <router-link style="float: right" to="/">注册账户</router-link>
-        </div> -->
           <a-tab-pane tab="扫码登录" key="3"> </a-tab-pane>
         </a-tabs>
       </a-form>
@@ -110,20 +113,12 @@ export default {
   components: { CommonLayout },
   data() {
     return {
-      loading: false,
-      loginForm: {
-        username: "testManage",
-        password: "123456"
-      },
-      checked: true,
-      rules: {
-        username: [
-          { required: true, message: "请输入用户名", trigger: "blur" }
-        ],
-        password: [{ required: true, message: "请输入密码", trigger: "blur" }],
-        code: [{ required: true, message: "请输入验证码", trigger: "blur" }]
-      }
+      logging: false,
+      testuser:this.$store.state.setting.testuser,
     };
+  },
+  beforeCreate() {
+    this.form = this.$form.createForm(this, { name: "normal_login" });
   },
   computed: {
     systemName() {
@@ -132,28 +127,24 @@ export default {
   },
   methods: {
     ...mapMutations(["changeLogin"]),
-    login() {
-      // this.loginForm.client_id = "user_clientid";
-      // this.loginForm.client_secret = "user_secret";
-      // this.loginForm.grant_type = "password";
-
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true;
-          this.postKeyValueRequest("/dologin", this.loginForm).then(resp => {
-            this.loading = false;
-            //   if (resp) {
-            // console.log(JSON.stringify(resp.access_token));
-            //   } else {
-            //     return false;
-            //   }
-            this.userToken = "Bearer " + resp.access_token;
-            // 将用户token保存到vuex中
-            this.changeLogin({ Authorization: this.userToken });
-            this.$router.push("/home");
-          });
-        } else {
-          return false;
+    login(name, pass) {
+      const loginData = this.$store.state.setting.authinfo;
+      loginData.username=name,
+      loginData.password=pass,
+      this.logging = true;
+      this.postKeyValueRequest("/dologin", loginData).then(resp => {
+        this.logging = false;
+        this.userToken = "Bearer " + resp.access_token;
+        // 将用户token保存到vuex中
+        this.changeLogin({ Authorization: this.userToken });
+        this.$router.push("/home");
+      });
+    },
+    onSubmit(e) {
+      e.preventDefault();
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          this.login(values.username, values.password);
         }
       });
     }

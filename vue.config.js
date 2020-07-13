@@ -4,6 +4,7 @@ const { getThemeColors, modifyVars } = require("./src/utils/themeUtil");
 const { resolveCss } = require("./src/utils/theme-color-replacer-extend");
 
 module.exports = {
+  lintOnSave: false,
   pluginOptions: {
     "style-resources-loader": {
       preProcessor: "less",
@@ -21,6 +22,12 @@ module.exports = {
     );
   },
   chainWebpack: config => {
+    config
+    .plugin('html')
+    .tap(args => {
+      args[0].title= 'Re-Backlog'
+      return args
+    })
     // 生产环境下关闭css压缩的 colormin 项，因为此项优化与主题色替换功能冲突
     if (process.env.NODE_ENV === "production") {
       config.plugin("optimize-css").tap(args => {
@@ -63,7 +70,6 @@ module.exports = {
       }
     },
     port: 5001,
-    https: false,
-    lintOnSave: false
+    https: false
   }
 };

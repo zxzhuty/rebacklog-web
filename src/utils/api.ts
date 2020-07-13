@@ -1,37 +1,31 @@
 import axios from "axios";
-// import { Message } from "element-ui";
+import { message } from "ant-design-vue";
 import router from "../router";
 
 axios.interceptors.response.use(
   success => {
-    if (success.status && success.status == 200 && success.data.status == 500) {
-      // Message.error({ message: success.data.msg });
-      return;
-    }
-    if (success.data.msg) {
-      // Message.success({ message: success.data.msg });
+    if (success.status && success.status == 200) {
+      message.success("(test)获取到数据："+JSON.stringify(success.data).slice(0,30)+"......");
     }
     return success.data;
   },
   error => {
-    if (error.response.status == 504 || error.response.status == 404) {
-      // Message.error({ message: "服务器被吃了( ╯□╰ )" });
+    if (
+      error.response.status == 504 ||
+      error.response.status == 404 ||
+      error.response.status == 500
+    ) {
+      message.error("服务器出错");
+    } else if (error.response.status == 400) {
+      message.error(error.response.data.error);
     } else if (error.response.status == 403) {
-      // Message.error({ message: "权限不足，请联系管理员" });
+      message.error("权限不足，请联系管理员");
     } else if (error.response.status == 401) {
-      // Message.error({
-      //   message: error.response.data.msg
-      //     ? error.response.data.msg
-      //     : "尚未登录，请登录"
-      // });
+      message.error("尚未登录，请登录");
       localStorage.removeItem("Authorization");
       router.push("/login");
     } else {
-      if (error.response.data.msg) {
-        // Message.error({ message: error.response.data.msg });
-      } else {
-        // Message.error({ message: "未知错误!" });
-      }
+      message.error(JSON.stringify(error.response.data));
     }
     return;
   }

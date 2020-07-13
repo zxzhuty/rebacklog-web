@@ -23,5 +23,11 @@ module.exports = {
   footerLinks: [
     //页面底部链接，{link: '链接地址', name: '名称/显示文字', icon: '图标，支持 ant design vue 图标库'}
     { link: "https://github.com/zxzhuty/rebacklog-web", icon: "github" }
-  ]
+  ],
+  authinfo: {
+    client_id: "user_clientid",
+    client_secret: "user_secret",
+    grant_type: "password"
+  },
+  testuser:{username:"testManage",password:"123456"}
 };
