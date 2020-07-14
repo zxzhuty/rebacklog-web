@@ -105,7 +105,7 @@
 </template>
 
 <script>
-import CommonLayout from "@/layouts/CommonLayout";
+import CommonLayout from "../layouts/CommonLayout";
 import { mapMutations } from "vuex";
 
 export default {
@@ -114,7 +114,7 @@ export default {
   data() {
     return {
       logging: false,
-      testuser:this.$store.state.setting.testuser,
+      testuser: this.$store.state.setting.testuser
     };
   },
   beforeCreate() {
@@ -129,9 +129,9 @@ export default {
     ...mapMutations(["changeLogin"]),
     login(name, pass) {
       const loginData = this.$store.state.setting.authinfo;
-      loginData.username=name,
-      loginData.password=pass,
-      this.logging = true;
+      (loginData.username = name),
+        (loginData.password = pass),
+        (this.logging = true);
       this.postKeyValueRequest("/dologin", loginData).then(resp => {
         this.logging = false;
         this.userToken = "Bearer " + resp.access_token;

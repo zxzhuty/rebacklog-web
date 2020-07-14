@@ -5,7 +5,11 @@ import router from "../router";
 axios.interceptors.response.use(
   success => {
     if (success.status && success.status == 200) {
-      message.success("(test)获取到数据："+JSON.stringify(success.data).slice(0,30)+"......");
+      message.success(
+        "(test)获取到数据：" +
+          JSON.stringify(success.data).slice(0, 30) +
+          "......"
+      );
     }
     return success.data;
   },

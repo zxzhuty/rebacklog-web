@@ -29,5 +29,5 @@ module.exports = {
     client_secret: "user_secret",
     grant_type: "password"
   },
-  testuser:{username:"testManage",password:"123456"}
+  testuser: { username: "testManage", password: "123456" }
 };

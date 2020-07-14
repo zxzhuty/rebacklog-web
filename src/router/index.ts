@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
+import TabsView from "@/views/layouts/TabsView.vue";
 
 Vue.use(VueRouter);
 
@@ -9,9 +10,20 @@ const routes: Array<RouteConfig> = [
     redirect: "/home"
   },
   {
-    path: "/home",
-    name: "home",
-    component: () => import("../views/Home.vue")
+    path: "/",
+    component: TabsView,
+    children: [
+      {
+        path: "test",
+        name: "测试",
+        component: () => import("../views/test/test.vue")
+      },
+      {
+        path: "home",
+        name: "主页",
+        component: () => import("../views/Home.vue")
+      }
+    ]
   },
   {
     path: "/login",
@@ -29,7 +41,6 @@ router.beforeEach((to, from, next) => {
     next();
   } else {
     const token = localStorage.getItem("Authorization");
-
     if (token === "null" || token === "") {
       next("/login");
     } else {

@@ -1,24 +1,30 @@
 <template>
-  <div class="home">{{ testdata }}</div>
+  <page-layout
+    ><template
+      ><div><a-card>123</a-card></div></template
+    ></page-layout
+  >
 </template>
 
 <script>
+import PageLayout from "./layouts/PageLayout";
+
 export default {
   name: "Home",
-  components: {},
+  components: { PageLayout },
   data() {
     return {
       testdata: ""
     };
   },
   methods: {
-    async fetchWeatherForecasts() {
-      const response = await this.getRequest("api/weatherforecast");
-      this.testdata = JSON.stringify(response);
-    }
+    // async fetchWeatherForecasts() {
+    //   const response = await this.getRequest("api/weatherforecast");
+    //   this.testdata = JSON.stringify(response);
+    // },
   },
   async created() {
-    await this.fetchWeatherForecasts();
+    // await this.fetchWeatherForecasts();
   }
 };
 </script>

@@ -2,6 +2,8 @@ import Vue from "vue";
 import Vuex from "vuex";
 // @ts-ignore
 import setting from "./modules/setting";
+// @ts-ignore
+import account from "./modules/account";
 
 Vue.use(Vuex);
 
@@ -20,5 +22,5 @@ export default new Vuex.Store({
     }
   },
   actions: {},
-  modules: { setting }
+  modules: { setting, account }
 });
