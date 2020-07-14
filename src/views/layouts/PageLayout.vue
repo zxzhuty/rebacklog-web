@@ -83,7 +83,7 @@ export default {
       const breadcrumb = [];
       routes.forEach(route => {
         const path = route.path;
-        const key = path.length == 0 ? "/" : path;
+        const key = path.length == 0 ? "/home" : path;
         breadcrumb.push(
           this.$t(key.substring(1).replace(new RegExp("/", "g"), ".") + ".name")
         );

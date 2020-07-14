@@ -7,6 +7,8 @@ import "./theme/index.less";
 import store from "./store";
 import "animate.css/source/animate.css";
 import VueI18n from "vue-i18n";
+// @ts-ignore
+import Plugins from "@/plugins";
 import { postRequest } from "./utils/api";
 import { postKeyValueRequest } from "./utils/api";
 import { putRequest } from "./utils/api";
@@ -22,6 +24,7 @@ Vue.prototype.getRequest = getRequest;
 Vue.config.productionTip = false;
 Vue.use(Antd);
 Vue.use(VueI18n);
+Vue.use(Plugins);
 
 const i18n = new VueI18n({
   locale: "CN",

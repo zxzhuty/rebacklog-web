@@ -1,13 +1,13 @@
 <template>
   <div class="page-header">
     <div :class="['page-header-wide', layout]">
-      <div class="breadcrumb">
+      <!-- <div class="breadcrumb">
         <a-breadcrumb>
           <a-breadcrumb-item :key="index" v-for="(item, index) in breadcrumb">
             <span>{{ item }}</span>
           </a-breadcrumb-item>
         </a-breadcrumb>
-      </div>
+      </div> -->
       <div class="detail">
         <div class="main">
           <div class="row">

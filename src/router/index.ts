@@ -21,7 +21,7 @@ const routes: Array<RouteConfig> = [
       {
         path: "home",
         name: "主页",
-        component: () => import("../views/Home.vue")
+        component: () => import("../views/home.vue"),
       }
     ]
   },
@@ -32,6 +32,7 @@ const routes: Array<RouteConfig> = [
 ];
 
 const router = new VueRouter({
+  mode: 'history',
   routes
 });
 // 导航守卫

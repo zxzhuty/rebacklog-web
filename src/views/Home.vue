@@ -1,7 +1,7 @@
 <template>
-  <page-layout
-    ><template
-      ><div><a-card>123</a-card></div></template
+  <page-layout title="测试数据"
+    ><template slot="extra"
+      >{{testdata}}</template
     ></page-layout
   >
 </template>
@@ -10,21 +10,21 @@
 import PageLayout from "./layouts/PageLayout";
 
 export default {
-  name: "Home",
+  name: "home",
   components: { PageLayout },
   data() {
     return {
-      testdata: ""
+      testdata: "",
     };
   },
   methods: {
-    // async fetchWeatherForecasts() {
-    //   const response = await this.getRequest("api/weatherforecast");
-    //   this.testdata = JSON.stringify(response);
-    // },
+    async fetchWeatherForecasts() {
+      const response = await this.getRequest("api/weatherforecast");
+      this.testdata = JSON.stringify(response);
+    }
   },
   async created() {
-    // await this.fetchWeatherForecasts();
+    await this.fetchWeatherForecasts();
   }
 };
 </script>
