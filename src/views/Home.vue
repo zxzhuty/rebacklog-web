@@ -21,10 +21,16 @@ export default {
     async fetchWeatherForecasts() {
       const response = await this.getRequest("api/weatherforecast");
       this.testdata = JSON.stringify(response);
+    },
+    async getuserinfo() {
+      const response = await this.getRequest("api/UserInfo/GetBaseInfo");
+      this.$store.state.account.user.name = response.displayName;
+      this.$store.state.account.user.avatar = response.avatarurl;
     }
   },
   async created() {
     await this.fetchWeatherForecasts();
+    await this.getuserinfo();
   }
 };
 </script>

@@ -2,7 +2,7 @@ export default {
   namespaced: true,
   state: {
     menulist: [],
-    user: {}
+    user: {name:"",avatar:""}
   },
   mutations: {}
 };
