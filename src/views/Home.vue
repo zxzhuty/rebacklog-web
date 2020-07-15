@@ -26,7 +26,7 @@ export default {
       const response = await this.getRequest("api/UserInfo/GetBaseInfo");
       this.$store.state.account.user.name = response.displayName;
       this.$store.state.account.user.avatar = response.avatarurl;
-    }
+    },
   },
   async created() {
     await this.fetchWeatherForecasts();

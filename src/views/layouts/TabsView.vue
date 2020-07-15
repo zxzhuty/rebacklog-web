@@ -62,32 +62,12 @@ export default {
   computed: {
     ...mapState("setting", ["multiPage", "animate", "layout", "dustbins"])
   },
-  created() {
+ created() {
     const route = this.$route;
     this.pageList.push(route);
     this.activePage = route.fullPath;
-    this.$store.state.account.menulist = [
-      {
-        name: "主页",
-        path: "/home/*",
-        meta: {
-          icon: "home"
-          // invisible: "boolean, 是否隐藏此菜单项, 默认 false",
-        },
-        children: [
-          //子菜单配置
-          {
-            name: "测试",
-            path: "/test",
-            meta: {
-              icon: "like"
-              // invisible: "boolean, 是否隐藏此菜单项, 默认 false",
-            }
-          }
-        ]
-      }
-    ];
-  },
+    this.getRequest("api/UserInfo/GetNavMenuInfo").then(res=>{this.$store.state.account.menulist=res})
+  }, 
   watch: {
     $route: function(newRoute) {
       this.activePage = newRoute.fullPath;
