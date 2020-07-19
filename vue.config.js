@@ -1,73 +1,132 @@
-const path = require("path");
-const ThemeColorReplacer = require("webpack-theme-color-replacer");
-const { getThemeColors, modifyVars } = require("./src/utils/themeUtil");
-const { resolveCss } = require("./src/utils/theme-color-replacer-extend");
+const path = require('path')
+const webpack = require('webpack')
+const GitRevisionPlugin = require('git-revision-webpack-plugin')
+const GitRevision = new GitRevisionPlugin()
+const buildDate = JSON.stringify(new Date().toLocaleString())
+const createThemeColorReplacerPlugin = require('./config/plugin.config')
 
-module.exports = {
-  lintOnSave: false,
-  pluginOptions: {
-    "style-resources-loader": {
-      preProcessor: "less",
-      patterns: [path.resolve(__dirname, "./src/theme/theme.less")]
-    }
+function resolve (dir) {
+  return path.join(__dirname, dir)
+}
+
+const isProd = process.env.NODE_ENV === 'production'
+
+const assetsCDN = {
+  // webpack build externals
+  externals: {
+    vue: 'Vue',
+    'vue-router': 'VueRouter',
+    vuex: 'Vuex',
+    axios: 'axios'
   },
-  configureWebpack: config => {
-    config.entry.app = ["babel-polyfill", "whatwg-fetch", "./src/main.ts"];
-    config.plugins.push(
-      new ThemeColorReplacer({
-        fileName: "css/theme-colors-[contenthash:8].css",
-        matchColors: getThemeColors(),
-        resolveCss
+  css: [],
+  // https://unpkg.com/browse/vue@2.6.10/
+  js: [
+    '//cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js',
+    '//cdn.jsdelivr.net/npm/vue-router@3.1.3/dist/vue-router.min.js',
+    '//cdn.jsdelivr.net/npm/vuex@3.1.1/dist/vuex.min.js',
+    '//cdn.jsdelivr.net/npm/axios@0.19.0/dist/axios.min.js'
+  ]
+}
+
+// vue.config.js
+const vueConfig = {
+  configureWebpack: {
+    // webpack plugins
+    plugins: [
+      // Ignore all locale files of moment.js
+      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+      new webpack.DefinePlugin({
+        APP_VERSION: `"${require('./package.json').version}"`,
+        GIT_HASH: JSON.stringify(GitRevision.version()),
+        BUILD_DATE: buildDate
       })
-    );
+    ],
+    // if prod, add externals
+    externals: isProd ? assetsCDN.externals : {}
   },
-  chainWebpack: config => {
-    config.plugin("html").tap(args => {
-      args[0].title = "Re-Backlog";
-      return args;
-    });
-    // 生产环境下关闭css压缩的 colormin 项，因为此项优化与主题色替换功能冲突
-    if (process.env.NODE_ENV === "production") {
-      config.plugin("optimize-css").tap(args => {
-        args[0].cssnanoOptions.preset[1].colormin = false;
-        return args;
-      });
+
+  chainWebpack: (config) => {
+    config.resolve.alias
+      .set('@$', resolve('src'))
+
+    const svgRule = config.module.rule('svg')
+    svgRule.uses.clear()
+    svgRule
+      .oneOf('inline')
+      .resourceQuery(/inline/)
+      .use('vue-svg-icon-loader')
+      .loader('vue-svg-icon-loader')
+      .end()
+      .end()
+      .oneOf('external')
+      .use('file-loader')
+      .loader('file-loader')
+      .options({
+        name: 'assets/[name].[hash:8].[ext]'
+      })
+
+    // if prod is on
+    // assets require on cdn
+    if (isProd) {
+      config.plugin('html').tap(args => {
+        args[0].cdn = assetsCDN
+        return args
+      })
     }
   },
+
   css: {
     loaderOptions: {
       less: {
-        lessOptions: {
-          modifyVars: modifyVars(),
-          javascriptEnabled: true
-        }
+        modifyVars: {
+          // less vars，customize ant design theme
+
+          // 'primary-color': '#F5222D',
+          // 'link-color': '#F5222D',
+          'border-radius-base': '2px'
+        },
+        // DO NOT REMOVE THIS LINE
+        javascriptEnabled: true
       }
     }
   },
-  publicPath: "./",
-  outputDir: "dist",
-  assetsDir: "static",
-  productionSourceMap: false,
+
   devServer: {
     proxy: {
-      "/dologin": {
-        target: "https://localhost:4000",
+      '/login': {
+        target: 'https://localhost:4000',
         changeOrigin: true,
         ws: true,
         pathRewrite: {
-          "^/dologin": "/connect/token"
+          '^/login': '/connect/token'
         }
       },
-      "/api": {
-        target: "https://localhost:5000",
+      '/api': {
+        target: 'http://localhost:5010',
         changeOrigin: true,
         ws: true,
         pathRewrite: {
-          "^/api": "/"
+          '^/api': '/'
         }
       }
     },
     port: 5001,
     https: false
-  }
-};
+  },
+
+  // disable source map in production
+  productionSourceMap: false,
+  lintOnSave: undefined,
+  // babel-loader no-ignore node_modules/*
+  transpileDependencies: []
+}
+
+// preview.pro.loacg.com only do not use in your production;
+if (process.env.VUE_APP_PREVIEW === 'true') {
+  console.log('VUE_APP_PREVIEW', true)
+  // add `ThemeColorReplacer` plugin to webpack plugins
+  vueConfig.configureWebpack.plugins.push(createThemeColorReplacerPlugin())
+}
+
+module.exports = vueConfig
